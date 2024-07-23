@@ -1,0 +1,101 @@
+LRD
+C:\ run "MDEStatus.PS1"
+MS Sense.exe shows defender is running on the task
+
+Known limitations
+.25 live response sessions at a time
+.Inactive timeout of a session is 30 minutes
+.Individual live response commands have a time limit of 10
+.Getfile, findfile and run have a limit of 30 minutes
+.One single user can initiate 10 concurrent sessions
+.A device can only be in one session
+
+The following file size limits are applicable:
+
+getfile limit: 3 GB
+fileinfo limit: 30 GB
+library limit: 250 MB
+
+****
+Listing and exporting processes
+
+# Get information about all running processes
+$processes = Get-Process | Select-Object Id, ProcessName, CPU, Memory, StartTime
+
+# Display process information
+$processes | Format-Table -AutoSize
+
+run listallprocesses1.ps1
+
+$processes = Get-Process | Select-Object Id, ProcessName, CPU, Memory, StartTime
+$textFilePath = "C:\Path\To\Your\ProcessInfo.txt"
+$processes | Out-File -FilePath $textFilePath
+Write-Host "Process information exported to: $textFilePath"
+******
+Example 2: Downloading files related to security event logs.
+
+getfile C:\Windows\System32\winevt\Logs\Security.evtx
+******
+Listing and exporting scheduled tasks.
+
+$scheduledTasks = Get-ScheduledTask
+$scheduledTasks | Select-Object TaskName, Actions, NextRunTime, LastRunTime, IsActive | Format-Table -AutoSize
+$scheduledTasks | Select-Object TaskName, Actions, NextRunTime, LastRunTime, IsActive | Export-Csv -Path "C:\ScheduledTasks.csv" -NoTypeInformation -Delimiter ','
+
+getfile C:\ScheduledTasks.csv
+******
+Listing all the processes used by WMI and exporting them to a csv file.
+
+$processes = Get-WmiObject Win32_Process | Select-Object ProcessId, Name, CommandLine
+$processes | Export-Csv -Path 'C:\WMIProcesses.csv' -NoTypeInformation
+Invoke-Item 'C:\WMIProcesses.csv'
+******
+Listing all firewall rules on a windows endpoint and exporting them to a csv file
+
+$firewallRules = Get-NetFirewallRule
+$excelFilePath = "C:\FirewallLogs.csv"
+$firewallRules | Export-Csv -Path $excelFilePath -NoTypeInformation
+Write-Host "Firewall logs exported to $excelFilePath"
+
+run firewallrulesinfo.ps1
+*****
+Listing all services (Running and stopped)
+
+Get-Service | Format-Table -AutoSize
+******
+Browser artifacts:
+Edge History (SQLite Database)
+
+getfile C:\Users\[Yourusername]\AppData\Local\Microsoft\Edge\UserData\Default\History
+
+Edge Cookies (SQLite Database):
+
+getfile C:\Users\[Yourusername]\AppData\Local\Microsoft\Edge\UserData\Default\Network\Cookies
+
+Edge Sessions:
+
+getfile C:\Users\[Yourusername]\AppData\Local\Microsoft\Edge\User Data\Default\Sessions
+
+***
+1. netstat -an: Displays active network connections and listening ports on the system.
+2. ps -ef | grep <process_name>: Shows information about currently running processes on the system.
+3. whoami: Prints the current username of the logged-in user.
+4. hostname: Displays the hostname of the system.
+5. ipconfig /ifconfig: Shows the network configuration and IP address information of the system.
+6. route print: Prints the routing table information, including default gateway and network routes.
+7. ping <ip_address>: Tests network connectivity to a specific IP address.
+8. net user <username>: Displays information about a specific user account on the system.
+9. net group <groupname>: Shows information about a specific group on the system.
+10. tasklist: Lists all running processes on the system along with their process IDs.
+11. wmic process get name,processid: Retrieves the name and process IDs of all running processes using the Windows Management Instrumentation Command-line (WMIC) tool.
+12. reg query <registry_key>: Retrieves information from the Windows Registry for a specific registry key.
+13. eventvwr: Opens the Event Viewer tool to view system logs and events.
+14. dir /s: Lists all files and directories in the current directory and its subdirectories.
+15. attrib <file_path>: Displays or modifies the attributes (such as read-only, hidden, etc.) of a specific file.
+16. taskkill /F /PID <process_id>: Terminates a specific process by its process ID forcefully.
+17. netsh advfirewall show allprofiles: Shows the configuration and status of the Windows Firewall on the system.
+18. diskpart: Opens the Diskpart command-line utility to manage disk partitions and volumes.
+19. schtasks /query /fo list: Lists all scheduled tasks on the system.
+20. systeminfo: Provides detailed information about the system's hardware, software, and configuration.
+***
+
